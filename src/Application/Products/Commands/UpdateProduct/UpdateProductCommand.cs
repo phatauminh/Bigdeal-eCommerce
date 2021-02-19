@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ToDoApp.Application.ManageProducts.Commands.UpdateProduct
+namespace ToDoApp.Application.Products.Commands.UpdateProduct
 {
     public class UpdateProductCommand : IRequest
     {
@@ -25,11 +25,11 @@ namespace ToDoApp.Application.ManageProducts.Commands.UpdateProduct
 
     }
 
-    public class UpdateProductCommandCommandHandler : IRequestHandler<UpdateProductCommand>
+    public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
     {
         private readonly IApplicationDbContext _context;
 
-        public UpdateProductCommandCommandHandler(IApplicationDbContext context)
+        public UpdateProductCommandHandler(IApplicationDbContext context)
         {
             _context = context;
         }
@@ -50,7 +50,6 @@ namespace ToDoApp.Application.ManageProducts.Commands.UpdateProduct
             productTranslations.SeoTitle = request.SeoTitle;
             productTranslations.Details = request.Details;
             entity.Price = request.Price;
-            entity.OriginalPrice = request.OriginalPrice;
 
             await _context.SaveChangesAsync(cancellationToken);
 

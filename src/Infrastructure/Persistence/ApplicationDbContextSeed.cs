@@ -23,7 +23,7 @@ namespace CleanArchitecture.Infrastructure.Persistence
             if (userManager.Users.All(u => u.UserName != administrator.UserName))
             {
                 await userManager.CreateAsync(administrator, "Administrator1!");
-                await userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
+                await userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
             }
         }
 
@@ -48,6 +48,27 @@ namespace CleanArchitecture.Infrastructure.Persistence
                         new TodoItem { Title = "Water" }
                     }
                 });
+
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task SeedSampleLanguageAsync(ApplicationDbContext context)
+        {
+            // Seed, if necessary
+            if (!context.Languages.Any())
+            {
+                context.Languages.AddRange(
+                    new Language
+                    {
+                        Id = 1,
+                        Name = "Vietnamese"
+                    }, 
+                    new Language
+                    {
+                        Id = 2,
+                        Name = "English"
+                    });
 
                 await context.SaveChangesAsync();
             }

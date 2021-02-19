@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ToDoApp.Domain.Events;
 
-namespace ToDoApp.Application.ManageProducts.EventHandlers
+namespace ToDoApp.Application.Products.EventHandlers
 {
     public class ProductCreatedEventHandler : INotificationHandler<DomainEventNotification<ProductCreatedEvent>>
     {

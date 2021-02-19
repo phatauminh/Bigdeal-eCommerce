@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using CleanArchitecture.Application.Categories.Queries.GetProducts;
 using CleanArchitecture.Application.Common.Interfaces;
 using CleanArchitecture.Application.Common.Mappings;
 using CleanArchitecture.Application.Common.Models;
-using CleanArchitecture.Application.ManageProducts.Queries.GetProducts;
 using MediatR;
 using System.Linq;
 using System.Threading;

@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace ToDoApp.Application.ManageProducts.Commands.CreateProduct
+namespace ToDoApp.Application.Products.Commands.UpdateProduct
 {
-    public class CreateProductCommandValidator : AbstractValidator<CreateProductCommand>
+    public class UpdateProductCommandValidator : AbstractValidator<UpdateProductCommand>
     {
-        public CreateProductCommandValidator()
+        public UpdateProductCommandValidator()
         {
             RuleFor(v => v.Name).MaximumLength(200).NotEmpty();
             RuleFor(v => v.Price).NotEmpty();

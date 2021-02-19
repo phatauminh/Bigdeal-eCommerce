@@ -5,7 +5,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ToDoApp.Application.ManageProducts.Commands.DeleteProduct
+namespace ToDoApp.Application.Products.Commands.DeleteProduct
 {
     public class DeleteProductCommand : IRequest
     {
