@@ -12,9 +12,7 @@ namespace ToDoApp.Application.Products.Commands.UpdateProduct
     {
         public int Id { set; get; }
         public decimal Price { set; get; }
-        public decimal OriginalPrice { set; get; }
         public int Stock { set; get; }
-        public int ViewCount { set; get; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Details { get; set; }
