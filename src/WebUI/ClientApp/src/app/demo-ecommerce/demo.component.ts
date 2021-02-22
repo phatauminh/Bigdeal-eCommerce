@@ -77,7 +77,7 @@ export class DemoComponent {
           this.newListEditor.error = errors.Title[0];
         }
 
-        setTimeout(() => document.getElementById("title").focus(), 250);
+        setTimeout(() => document.getElementById("name").focus(), 250);
       }
     );
   }
@@ -85,20 +85,23 @@ export class DemoComponent {
   showListOptionsModal(template: TemplateRef<any>) {
     this.listOptionsEditor = {
       id: this.selectedList.id,
-      title: this.selectedList.name,
+      name: this.selectedList.name,
+      seoAlias: this.selectedList.seoAlias,
+      seoDescription: this.selectedList.seoDescription,
+      seoTitle: this.selectedList.seoTitle,
     };
 
     this.listOptionsModalRef = this.modalService.show(template);
   }
 
-  updateCategoryOptions() {
+  updateListOptions() {
     this.categoriesClient.update(this.selectedList.id, UpdateCategoryCommand.fromJS(this.listOptionsEditor))
       .subscribe(
         () => {
           this.selectedList.name = this.listOptionsEditor.name, this.listOptionsModalRef.hide();
-          this.selectedList.seoalias = this.listOptionsEditor.seoalias, this.listOptionsModalRef.hide();
-          this.selectedList.seodescription = this.listOptionsEditor.seodescription, this.listOptionsModalRef.hide();
-          this.selectedList.seotitle = this.listOptionsEditor.seotitle, this.listOptionsModalRef.hide();
+          this.selectedList.seoAlias = this.listOptionsEditor.seoAlias, this.listOptionsModalRef.hide();
+          this.selectedList.seoDescription = this.listOptionsEditor.seoDescription, this.listOptionsModalRef.hide();
+          this.selectedList.seoTitle = this.listOptionsEditor.seoTitle, this.listOptionsModalRef.hide();
 
           this.listOptionsEditor = {};
         },
@@ -133,7 +136,7 @@ export class DemoComponent {
     this.itemDetailsModalRef = this.modalService.show(template);
   }
 
-  addItem() {
+  addProduct() {
     let item = ProductDto.fromJS({
       id: 0,
       listId: this.selectedList.id,
@@ -143,32 +146,33 @@ export class DemoComponent {
 
     this.selectedList.products.push(item);
     let index = this.selectedList.products.length - 1;
-    this.editItem(item, 'itemTitle' + index);
+    this.editProduct(item, 'itemTitle' + index);
   }
 
-  editItem(item: ProductDto, inputId: string): void {
+  editProduct(item: ProductDto, inputId: string): void {
     this.selectedItem = item;
     setTimeout(() => document.getElementById(inputId).focus(), 100);
   }
 
-  updateItem(item: ProductDto, pressedEnter: boolean = false): void {
-    let isNewItem = item.id == 0;
+  updateProduct(item: ProductDto, pressedEnter: boolean = false): void {
+    let id = item.productTranslations[0].id;
+    let isNewItem = id == 0;
 
     if (!item.productTranslations[0].name.trim()) {
-      this.deleteItem(item);
+      this.deleteProduct(item);
       return;
     }
 
-    if (item.id == 0) {
+    if (id== 0) {
       this.productClient.create(CreateProductCommand.fromJS({ ...item, listId: this.selectedList.id }))
         .subscribe(
           result => {
-            item.id = result;
+            id = result;
           },
           error => console.error(error)
         );
     } else {
-      this.productClient.update(item.id, UpdateProductCommand.fromJS(item))
+      this.productClient.update(id, UpdateProductCommand.fromJS(item))
         .subscribe(
           () => console.log('Update succeeded.'),
           error => console.error(error)
@@ -178,22 +182,22 @@ export class DemoComponent {
     this.selectedItem = null;
 
     if (isNewItem && pressedEnter) {
-      this.addItem();
+      this.addProduct();
     }
   }
 
-  // Delete item
-  deleteItem(item: ProductDto) {
+  // Delete product
+  deleteProduct(item: ProductDto) {
     if (this.itemDetailsModalRef) {
       this.itemDetailsModalRef.hide();
     }
-
-    if (item.id == 0) {
+    let id = item.productTranslations[0].id;
+    if (id == 0) {
       let itemIndex = this.selectedList.products.indexOf(this.selectedItem);
       this.selectedList.products.splice(itemIndex, 1);
     } else {
-      this.productClient.delete(item.id).subscribe(
-        () => this.selectedList.products = this.selectedList.products.filter(t => t.id != item.id),
+      this.productClient.delete(id).subscribe(
+        () => this.selectedList.products = this.selectedList.products.filter(t => t.productTranslations[0].id != id),
         error => console.error(error)
       );
     }

@@ -10,7 +10,7 @@
     <div class="col-sm-4">
       <div class="clearfix">
         <h2 class="float-left">Lists</h2>
-        <button class="btn btn-default float-right" title="Add List..."
+        <button class="btn btn-default float-right" title="Add Category..."
           (click)="showNewListModal(newListModalTemplate)">
           <fa-icon [icon]="faPlus"></fa-icon>
         </button>
@@ -20,10 +20,7 @@
           [ngClass]="{ 'active': selectedList == list }" (click)="selectedList = list">
           <div class="clearfix">
             <div class="float-left">
-                {{ list.title }}
-            </div>
-            <div class="float-right text-right">
-                <span class="badge badge-light">{{ remainingItems(list) }}</span>
+                {{ list.name }}
             </div>
           </div>
         </li>
@@ -31,37 +28,30 @@
     </div>
     <div class="col-sm-8" *ngIf="selectedList">
       <div class="clearfix">
-        <h2 class="float-left">{{ selectedList.title }}</h2>
+        <h2 class="float-left">{{ selectedList.name }}</h2>
         <button id="listOptions" class="btn btn-default float-right" title="List Options..."
           (click)="showListOptionsModal(listOptionsModalTemplate)">
           <fa-icon [icon]="faEllipsisH"></fa-icon>
         </button>
       </div>
       <ul id="todo-items" class="list-group mb-2">
-        <li class="list-group-item" *ngFor="let item of selectedList.items; index as i">
+        <li class="list-group-item" *ngFor="let product of selectedList.products; index as i">
           <div class="d-flex">
-            <div class="todo-item-checkbox">
-              <input type="checkbox" [(ngModel)]="item.done" (change)="updateItem(item)" />
-            </div>
             <div class="flex-fill">
-              <input id="{{ 'itemTitle' + i }}" *ngIf="item == selectedItem" type="text"
-                class="form-control item-input-control" [(ngModel)]="item.title" (keyup.enter)="updateItem(item, true)"
-                (blur)="updateItem(item)" autofocus="autofocus" />
-              <div class="todo-item-title" *ngIf="item != selectedItem" [ngClass]="{ 'done-todo': item.done }"
-                (click)="editItem(item, 'itemTitle' + i)" class="form-control item-input-control">
-                <span>{{ item.title }}</span>
-              </div>
+              <input id="{{ 'itemTitle' + i }}" *ngIf="product == selectedItem" type="text"
+                class="form-control item-input-control" [(ngModel)]="product.productTranslations[0].name" (keyup.enter)="updateProduct(product, true)"
+                (blur)="updateProduct(product)" autofocus="autofocus" />
             </div>
             <div class="todo-item-commands">
-              <button *ngIf="item.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, item)"
+              <button *ngIf="product.id != 0" (click)="showItemDetailsModal(itemDetailsModalTemplate, product)"
                 class="btn btn-default btn-xs" role="button">
                 <fa-icon [icon]="faEllipsisH"></fa-icon>
               </button>
             </div>
           </div>
         </li>
-        <li class="list-group-item" (click)="addItem()">
-          <button class="btn btn-default">Add Item...</button>
+        <li class="list-group-item" (click)="addProduct()">
+          <button class="btn btn-default">Add Product...</button>
         </li>
       </ul>
     </div>
@@ -83,7 +73,7 @@
     <div class="form-group">
       <label for="inputListTitle">Title</label>
       <input type="text" class="form-control" id="inputListTitle" placeholder="List name..."
-        [(ngModel)]="listOptionsEditor.title" (keyup.enter)="updateListOptions()" />
+        [(ngModel)]="listOptionsEditor.name" (keyup.enter)="updateListOptions()" />
     </div>
     <div *ngIf="debug">
       <pre>{{ listOptionsEditor | json }}</pre>
@@ -118,12 +108,6 @@
         </select>
       </div>
       <div class="form-group">
-        <label for="priority">Priority</label>
-        <select class="form-control" [(ngModel)]="itemDetailsEditor.priority">
-          <option [ngValue]="level.value" *ngFor="let level of vm.priorityLevels">{{ level.name }}</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label for="note">Note</label>
         <textarea id="note" class="form-control" rows="3" [(ngModel)]="itemDetailsEditor.note"></textarea>
       </div>
@@ -147,7 +131,7 @@
 
 <ng-template #deleteListModalTemplate>
   <div class="modal-header clearfix">
-    <h4 class="modal-title float-left">Delete "{{ selectedList?.title }}"?</h4>
+    <h4 class="modal-title float-left">Delete "{{ selectedList?.name }}"?</h4>
     <button type="button" class="close float-right" aria-label="Close" (click)="deleteListModalRef.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -175,9 +159,9 @@
   </div>
   <div class="modal-body">
     <div class="form-group">
-      <label for="title">Title</label>
-      <input type="text" class="form-control" id="title" placeholder="List title..." [(ngModel)]="newListEditor.title"
-        [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addList()" />
+      <label for="name">Title</label>
+      <input type="text" class="form-control" id="name" placeholder="Category name..." [(ngModel)]="newListEditor.name"
+        [ngClass]="{ 'is-invalid': newListEditor.error }" (keyup.enter)="addCategory()" />
       <div *ngIf="newListEditor.error" class="invalid-feedback">
         {{ newListEditor.error }}
       </div>
@@ -189,7 +173,7 @@
   <div class="modal-footer">
     <div class="text-right">
       <button class="btn btn-default" (click)="newListCancelled()">Cancel</button>
-      <button class="btn btn-primary" (click)="addList()">Create</button>
+      <button class="btn btn-primary" (click)="addCategory()">Create</button>
     </div>
   </div>
 </ng-template>

@@ -4,14 +4,16 @@ using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CleanArchitecture.Infrastructure.Persistence.Migrations
+namespace CleanArchitecture.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210222143523_InitiateDb")]
+    partial class InitiateDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,8 +57,17 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<int>("Priority")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -74,8 +85,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("LanguageId")
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -84,7 +93,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("SeoAlias")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -169,7 +177,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 2, 18, 7, 39, 58, 760, DateTimeKind.Local).AddTicks(2917));
+                        .HasDefaultValue(new DateTime(2021, 2, 22, 6, 35, 22, 874, DateTimeKind.Local).AddTicks(3766));
 
                     b.Property<string>("ShipAddress")
                         .IsRequired()
@@ -240,7 +248,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 2, 18, 7, 39, 58, 776, DateTimeKind.Local).AddTicks(1509));
+                        .HasDefaultValue(new DateTime(2021, 2, 22, 6, 35, 22, 891, DateTimeKind.Local).AddTicks(8394));
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -329,8 +337,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(500)");
 
                     b.Property<int>("LanguageId")
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -342,7 +348,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SeoAlias")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 

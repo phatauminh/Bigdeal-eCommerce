@@ -17,6 +17,8 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 export interface ICategoriesClient {
   get(): Observable<ProductsVm>;
   create(command: CreateCategoryCommand): Observable<number>;
+  update(id: number, command: UpdateCategoryCommand): Observable<FileResponse>;
+  delete(id: number): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -233,13 +235,12 @@ export class CategoriesClient implements ICategoriesClient {
     }
     return _observableOf<FileResponse>(<any>null);
   }
-
 }
 
 export interface IManageProductsClient {
-  getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfProductDto>;
+  getProductsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfProductDto>;
   create(command: CreateProductCommand): Observable<number>;
-  update(id: number, command: CreateProductCommand): Observable<FileResponse>;
+  update(id: number, command: UpdateProductCommand): Observable<FileResponse>;
   delete(id: number): Observable<FileResponse>;
 }
 
@@ -256,9 +257,8 @@ export class ManageProductsClient implements IManageProductsClient {
     this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
   }
 
-
-  getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfProductDto> {
-    let url_ = this.baseUrl + "/api/TodoItems?";
+  getProductsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfProductDto> {
+    let url_ = this.baseUrl + "/api/ManageProducts?";
     if (listId === null)
       throw new Error("The parameter 'listId' cannot be null.");
     else if (listId !== undefined)
@@ -282,11 +282,11 @@ export class ManageProductsClient implements IManageProductsClient {
     };
 
     return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_: any) => {
-      return this.processGetTodoItemsWithPagination(response_);
+      return this.processGetProductsWithPagination(response_);
     })).pipe(_observableCatch((response_: any) => {
       if (response_ instanceof HttpResponseBase) {
         try {
-          return this.processGetTodoItemsWithPagination(<any>response_);
+          return this.processGetProductsWithPagination(<any>response_);
         } catch (e) {
           return <Observable<PaginatedListOfProductDto>><any>_observableThrow(e);
         }
@@ -295,7 +295,7 @@ export class ManageProductsClient implements IManageProductsClient {
     }));
   }
 
-  protected processGetTodoItemsWithPagination(response: HttpResponseBase): Observable<PaginatedListOfProductDto> {
+  protected processGetProductsWithPagination(response: HttpResponseBase): Observable<PaginatedListOfProductDto> {
     const status = response.status;
     const responseBlob =
       response instanceof HttpResponse ? response.body :
@@ -369,8 +369,8 @@ export class ManageProductsClient implements IManageProductsClient {
     return _observableOf<number>(<any>null);
   }
 
-  update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse> {
-    let url_ = this.baseUrl + "/api/TodoItems/{id}";
+  update(id: number, command: UpdateProductCommand): Observable<FileResponse> {
+    let url_ = this.baseUrl + "/api/ManageProducts/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -423,7 +423,7 @@ export class ManageProductsClient implements IManageProductsClient {
   }
 
   delete(id: number): Observable<FileResponse> {
-    let url_ = this.baseUrl + "/api/TodoItems/{id}";
+    let url_ = this.baseUrl + "/api/ManageProducts/{id}";
     if (id === undefined || id === null)
       throw new Error("The parameter 'id' must be defined.");
     url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -470,7 +470,6 @@ export class ManageProductsClient implements IManageProductsClient {
     }
     return _observableOf<FileResponse>(<any>null);
   }
-
 }
 
 export interface ITodoItemsClient {
@@ -1153,9 +1152,9 @@ export interface IProductsVm {
 export class ProductsInCategoryDto implements IProductsInCategoryDto {
   id?: number;
   name?: string | undefined;
-  seodescription?: string | undefined;
-  seotitle?: string | undefined;
-  seoalias?: string | undefined;
+  seoDescription?: string | undefined;
+  seoTitle?: string | undefined;
+  seoAlias?: string | undefined;
   products?: ProductDto[] | undefined;
 
   constructor(data?: IProductsInCategoryDto) {
@@ -1171,6 +1170,9 @@ export class ProductsInCategoryDto implements IProductsInCategoryDto {
     if (_data) {
       this.id = _data["id"];
       this.name = _data["name"];
+      this.seoDescription = _data["seoDescription"];
+      this.seoTitle = _data["seoTitle"];
+      this.seoAlias = _data["seoAlias"];
       if (Array.isArray(_data["products"])) {
         this.products = [] as any;
         for (let item of _data["products"])
@@ -1190,6 +1192,9 @@ export class ProductsInCategoryDto implements IProductsInCategoryDto {
     data = typeof data === 'object' ? data : {};
     data["id"] = this.id;
     data["name"] = this.name;
+    data["seoDescription"] = this.seoDescription;
+    data["seoTitle"] = this.seoTitle;
+    data["seoAlias"] = this.seoAlias;
     if (Array.isArray(this.products)) {
       data["products"] = [];
       for (let item of this.products)
@@ -1202,15 +1207,12 @@ export class ProductsInCategoryDto implements IProductsInCategoryDto {
 export interface IProductsInCategoryDto {
   id?: number;
   name?: string | undefined;
-  seodescription?: string | undefined;
-  seotitle?: string | undefined;
-  seoalias?: string | undefined;
   products?: ProductDto[] | undefined;
 }
 
 export class ProductDto implements IProductDto {
-  id?: number
   price?: number;
+  originalPrice?: number;
   productTranslations?: ProductTranslation[] | undefined;
   productImages?: ProductImage[] | undefined;
 
@@ -1226,6 +1228,7 @@ export class ProductDto implements IProductDto {
   init(_data?: any) {
     if (_data) {
       this.price = _data["price"];
+      this.originalPrice = _data["originalPrice"];
       if (Array.isArray(_data["productTranslations"])) {
         this.productTranslations = [] as any;
         for (let item of _data["productTranslations"])
@@ -1249,6 +1252,7 @@ export class ProductDto implements IProductDto {
   toJSON(data?: any) {
     data = typeof data === 'object' ? data : {};
     data["price"] = this.price;
+    data["originalPrice"] = this.originalPrice;
     if (Array.isArray(this.productTranslations)) {
       data["productTranslations"] = [];
       for (let item of this.productTranslations)
@@ -1264,8 +1268,8 @@ export class ProductDto implements IProductDto {
 }
 
 export interface IProductDto {
-  id?: number
   price?: number;
+  originalPrice?: number;
   productTranslations?: ProductTranslation[] | undefined;
   productImages?: ProductImage[] | undefined;
 }
@@ -2092,6 +2096,122 @@ export interface ICreateCategoryCommand {
   name?: string | undefined;
 }
 
+export class UpdateCategoryCommand implements IUpdateCategoryCommand {
+  id?: number;
+  name?: string | undefined;
+  seoDescription?: string | undefined;
+  seoTitle?: string | undefined;
+  seoAlias?: string | undefined;
+
+  constructor(data?: IUpdateCategoryCommand) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.id = _data["id"];
+      this.name = _data["name"];
+      this.seoDescription = _data["seoDescription"];
+      this.seoTitle = _data["seoTitle"];
+      this.seoAlias = _data["seoAlias"];
+    }
+  }
+
+  static fromJS(data: any): UpdateCategoryCommand {
+    data = typeof data === 'object' ? data : {};
+    let result = new UpdateCategoryCommand();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    data["id"] = this.id;
+    data["name"] = this.name;
+    data["seoDescription"] = this.seoDescription;
+    data["seoTitle"] = this.seoTitle;
+    data["seoAlias"] = this.seoAlias;
+    return data;
+  }
+}
+
+export interface IUpdateCategoryCommand {
+  id?: number;
+  name?: string | undefined;
+  seoDescription?: string | undefined;
+  seoTitle?: string | undefined;
+  seoAlias?: string | undefined;
+}
+
+export class PaginatedListOfProductDto implements IPaginatedListOfProductDto {
+  items?: ProductDto[] | undefined;
+  pageIndex?: number;
+  totalPages?: number;
+  totalCount?: number;
+  hasPreviousPage?: boolean;
+  hasNextPage?: boolean;
+
+  constructor(data?: IPaginatedListOfProductDto) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property))
+          (<any>this)[property] = (<any>data)[property];
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      if (Array.isArray(_data["items"])) {
+        this.items = [] as any;
+        for (let item of _data["items"])
+          this.items!.push(ProductDto.fromJS(item));
+      }
+      this.pageIndex = _data["pageIndex"];
+      this.totalPages = _data["totalPages"];
+      this.totalCount = _data["totalCount"];
+      this.hasPreviousPage = _data["hasPreviousPage"];
+      this.hasNextPage = _data["hasNextPage"];
+    }
+  }
+
+  static fromJS(data: any): PaginatedListOfProductDto {
+    data = typeof data === 'object' ? data : {};
+    let result = new PaginatedListOfProductDto();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === 'object' ? data : {};
+    if (Array.isArray(this.items)) {
+      data["items"] = [];
+      for (let item of this.items)
+        data["items"].push(item.toJSON());
+    }
+    data["pageIndex"] = this.pageIndex;
+    data["totalPages"] = this.totalPages;
+    data["totalCount"] = this.totalCount;
+    data["hasPreviousPage"] = this.hasPreviousPage;
+    data["hasNextPage"] = this.hasNextPage;
+    return data;
+  }
+}
+
+export interface IPaginatedListOfProductDto {
+  items?: ProductDto[] | undefined;
+  pageIndex?: number;
+  totalPages?: number;
+  totalCount?: number;
+  hasPreviousPage?: boolean;
+  hasNextPage?: boolean;
+}
+
 export class CreateProductCommand implements ICreateProductCommand {
   id?: number;
   price?: number;
@@ -2170,6 +2290,7 @@ export class UpdateProductCommand implements IUpdateProductCommand {
   seoDescription?: string | undefined;
   seoTitle?: string | undefined;
   seoAlias?: string | undefined;
+  languageId?: string | undefined;
 
   constructor(data?: IUpdateProductCommand) {
     if (data) {
@@ -2191,6 +2312,7 @@ export class UpdateProductCommand implements IUpdateProductCommand {
       this.seoDescription = _data["seoDescription"];
       this.seoTitle = _data["seoTitle"];
       this.seoAlias = _data["seoAlias"];
+      this.languageId = _data["languageId"];
     }
   }
 
@@ -2212,6 +2334,7 @@ export class UpdateProductCommand implements IUpdateProductCommand {
     data["seoDescription"] = this.seoDescription;
     data["seoTitle"] = this.seoTitle;
     data["seoAlias"] = this.seoAlias;
+    data["languageId"] = this.languageId;
     return data;
   }
 }
@@ -2226,60 +2349,8 @@ export interface IUpdateProductCommand {
   seoDescription?: string | undefined;
   seoTitle?: string | undefined;
   seoAlias?: string | undefined;
+  languageId?: string | undefined;
 }
-
-export class UpdateCategoryCommand implements IUpdateCategoryCommand {
-  id?: number;
-  name?: string | undefined;
-  seodescription?: string | undefined;
-  seotitle?: string | undefined;
-  seoalias?: string | undefined;
-
-  constructor(data?: IUpdateCategoryCommand) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
-    }
-  }
-
-  init(_data?: any) {
-    if (_data) {
-      this.id = _data["id"];
-      this.name = _data["name"];
-      this.seodescription = _data["seodescription"];
-      this.seotitle = _data["seotitle"];
-      this.seoalias = _data["seoalias"];
-    }
-  }
-
-  static fromJS(data: any): UpdateCategoryCommand {
-    data = typeof data === 'object' ? data : {};
-    let result = new UpdateCategoryCommand();
-    result.init(data);
-    return result;
-  }
-
-  toJSON(data?: any) {
-    data = typeof data === 'object' ? data : {};
-    data["id"] = this.id;
-    data["name"] = this.name;
-    data["seodescription"] = this.seodescription;
-    data["seotitle"] = this.seotitle;
-    data["seoalias"] = this.seoalias;
-    return data;
-  }
-}
-
-export interface IUpdateCategoryCommand {
-  id?: number;
-  name?: string | undefined;
-  seodescription?: string | undefined;
-  seotitle?: string | undefined;
-  seoalias?: string | undefined;
-}
-
 
 export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {
   items?: TodoItemDto[] | undefined;
@@ -2338,70 +2409,6 @@ export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {
 
 export interface IPaginatedListOfTodoItemDto {
   items?: TodoItemDto[] | undefined;
-  pageIndex?: number;
-  totalPages?: number;
-  totalCount?: number;
-  hasPreviousPage?: boolean;
-  hasNextPage?: boolean;
-}
-
-export class PaginatedListOfProductDto implements IPaginatedListOfProductDto {
-  items?: ProductDto[] | undefined;
-  pageIndex?: number;
-  totalPages?: number;
-  totalCount?: number;
-  hasPreviousPage?: boolean;
-  hasNextPage?: boolean;
-
-  constructor(data?: IPaginatedListOfProductDto) {
-    if (data) {
-      for (var property in data) {
-        if (data.hasOwnProperty(property))
-          (<any>this)[property] = (<any>data)[property];
-      }
-    }
-  }
-
-  init(_data?: any) {
-    if (_data) {
-      if (Array.isArray(_data["items"])) {
-        this.items = [] as any;
-        for (let item of _data["items"])
-          this.items!.push(ProductDto.fromJS(item));
-      }
-      this.pageIndex = _data["pageIndex"];
-      this.totalPages = _data["totalPages"];
-      this.totalCount = _data["totalCount"];
-      this.hasPreviousPage = _data["hasPreviousPage"];
-      this.hasNextPage = _data["hasNextPage"];
-    }
-  }
-
-  static fromJS(data: any): PaginatedListOfProductDto {
-    data = typeof data === 'object' ? data : {};
-    let result = new PaginatedListOfProductDto();
-    result.init(data);
-    return result;
-  }
-
-  toJSON(data?: any) {
-    data = typeof data === 'object' ? data : {};
-    if (Array.isArray(this.items)) {
-      data["items"] = [];
-      for (let item of this.items)
-        data["items"].push(item.toJSON());
-    }
-    data["pageIndex"] = this.pageIndex;
-    data["totalPages"] = this.totalPages;
-    data["totalCount"] = this.totalCount;
-    data["hasPreviousPage"] = this.hasPreviousPage;
-    data["hasNextPage"] = this.hasNextPage;
-    return data;
-  }
-}
-
-export interface IPaginatedListOfProductDto {
-  items?: ProductDto[] | undefined;
   pageIndex?: number;
   totalPages?: number;
   totalCount?: number;

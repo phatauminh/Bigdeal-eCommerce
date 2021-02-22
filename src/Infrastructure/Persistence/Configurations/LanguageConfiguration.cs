@@ -10,6 +10,7 @@ namespace Data.Configurations
         {
             builder.ToTable("Languages");
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).UseIdentityColumn();
             builder.Property(x => x.Name).IsRequired().HasMaxLength(20);
         }
     }

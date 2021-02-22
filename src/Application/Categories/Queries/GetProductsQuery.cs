@@ -33,7 +33,6 @@ namespace CleanArchitecture.Application.Categories.Queries
                 Lists = await _context.Categories
                     .AsNoTracking()
                     .ProjectTo<ProductsInCategoryDto>(_mapper.ConfigurationProvider)
-                    .OrderBy(t => t.Name)
                     .ToListAsync(cancellationToken)
             };
         }

@@ -4,16 +4,14 @@ using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CleanArchitecture.Infrastructure.Persistence.Migrations
+namespace CleanArchitecture.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210217103242_InitialDemo")]
-    partial class InitialDemo
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -57,19 +55,17 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<bool>("IsShowOnHome")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("ParentId")
-                        .HasColumnType("int");
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -86,11 +82,8 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LanguageId")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -98,7 +91,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("SeoAlias")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -155,10 +147,10 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("CleanArchitecture.Domain.Entities.Language", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<bool>("IsDefault")
                         .HasColumnType("bit");
@@ -183,7 +175,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("OrderDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 2, 17, 2, 32, 42, 350, DateTimeKind.Local).AddTicks(5765));
+                        .HasDefaultValue(new DateTime(2021, 2, 22, 6, 35, 22, 874, DateTimeKind.Local).AddTicks(3766));
 
                     b.Property<string>("ShipAddress")
                         .IsRequired()
@@ -254,7 +246,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2021, 2, 17, 2, 32, 42, 365, DateTimeKind.Local).AddTicks(8649));
+                        .HasDefaultValue(new DateTime(2021, 2, 22, 6, 35, 22, 891, DateTimeKind.Local).AddTicks(8394));
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -262,18 +254,10 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Stock")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("ViewCount")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
@@ -350,11 +334,8 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<string>("LanguageId")
-                        .IsRequired()
-                        .HasMaxLength(5)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(5)");
+                    b.Property<int>("LanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -365,7 +346,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SeoAlias")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 

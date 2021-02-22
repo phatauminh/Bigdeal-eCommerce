@@ -61,13 +61,11 @@ namespace CleanArchitecture.Infrastructure.Persistence
                 context.Languages.AddRange(
                     new Language
                     {
-                        Id = 1,
-                        Name = "Vietnamese"
+                        Name = "English"
                     }, 
                     new Language
                     {
-                        Id = 2,
-                        Name = "English"
+                        Name = "Vietnamese"
                     });
 
                 await context.SaveChangesAsync();
